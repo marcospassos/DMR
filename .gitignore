@@ -1,0 +1,15 @@
+bin/*
+vendor/*
+
+# Others
+phpunit.xml
+composer.phar
+composer.lock
+
+# Eclipse project files
+.settings/*
+.project
+.buildpath
+
+# General
+.DS_Store

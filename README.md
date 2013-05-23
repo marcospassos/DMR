@@ -1,2 +1,2 @@
-DoctrineMapping
-===============
+Simplified Doctrine mapping reader
+==================================

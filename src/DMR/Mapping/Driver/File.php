@@ -30,7 +30,7 @@ abstract class File implements DriverInterface
      * from class/entity names to their corresponding elements.
      *
      * @param string $file The mapping file to load.
-     * 
+     *
      * @return array
      */
     abstract protected function loadMappingFile($file);
@@ -38,9 +38,27 @@ abstract class File implements DriverInterface
     /**
      * {@inheritDoc}
      */
+    public function getOriginalDriver()
+    {
+        return $this->originalDriver;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     public function setOriginalDriver(MappingDriver $driver)
     {
-    	$this->originalDriver = $driver;
+        $this->originalDriver = $driver;
+    }
+
+    /**
+     * Gets the file locator.
+     *
+     * @return FileLocator
+     */
+    public function getLocator()
+    {
+        return $this->locator;
     }
 
     /**
@@ -50,14 +68,14 @@ abstract class File implements DriverInterface
      */
     public function setLocator(FileLocator $locator)
     {
-    	$this->locator = $locator;
+        $this->locator = $locator;
     }
 
     /**
      * Tries to get a mapping for a given class
      *
      * @param string $className
-     * 
+     *
      * @return null|array|object
      */
     public function getMapping($className)

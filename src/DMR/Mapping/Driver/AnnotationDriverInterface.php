@@ -15,8 +15,15 @@ interface AnnotationDriverInterface extends DriverInterface
 {
     /**
      * Sets the annotation reader.
-     * 
+     *
      * @param Reader $reader
      */
     public function setAnnotationReader(Reader $reader);
+
+    /**
+     * Gets the annotation reader.
+     *
+     * @return Reader
+     */
+    public function getAnnotationReader();
 }

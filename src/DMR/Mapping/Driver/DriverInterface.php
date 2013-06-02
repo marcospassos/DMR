@@ -26,4 +26,11 @@ interface DriverInterface
      * @param MappingDriver $driver
      */
     public function setOriginalDriver(MappingDriver $driver);
+
+    /**
+     * Returns the original driver.
+     *
+     * @return MappingDriver
+     */
+    public function getOriginalDriver();
 }

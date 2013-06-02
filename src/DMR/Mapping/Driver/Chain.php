@@ -86,8 +86,16 @@ class Chain implements DriverInterface
     /**
      * {@inheritDoc}
      */
+    public function getOriginalDriver()
+    {
+        // not needed here
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     public function setOriginalDriver(MappingDriver $driver)
     {
-        //not needed here
+        // not needed here
     }
 }

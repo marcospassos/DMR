@@ -1,0 +1,40 @@
+{ 
+    "minimum-stability" : "dev",
+    "name" : "dmr/dmr",
+    "license" : "MIT",
+    "description" : "PHP 5.3+ library that provides a simple and flexible way to load custom mapping data for Doctrine 2.3+ projects",
+    "keywords" : ["doctrine", "mapping"],
+    "type" : "library",
+    "homepage" : "https://github.com/marcospassos/DMR",
+    "authors" : [{
+            "name" : "Marcos Passos",
+            "homepage" : "http://marcospassos.com"
+        }, {
+            "name" : "The contributors",
+            "homepage" : "http://github.com/marcospassos/DMR/contributors"
+        }
+    ],
+    "require" : {
+        "php" : ">=5.3",
+        "doctrine/common": ">=2.3.0" 
+    },
+    "require-dev" : {
+        "phpunit/phpunit" : "3.7.*",
+        "mikey179/vfsStream": "1.3.*",
+        "doctrine/orm": ">=2.3.0",
+        "doctrine/mongodb": ">=1.0.2",
+        "doctrine/mongodb-odm": ">=1.0.0-BETA8",
+        "symfony/yaml" : "*"
+    },
+    "suggest": {
+        "symfony/yaml": "If you want to read YAML mappings"
+    },
+    "autoload" : {
+        "psr-0" : {
+            "DMR" : "src/"
+        }
+    },
+    "config" : {
+        "bin-dir" : "bin"
+    }
+}

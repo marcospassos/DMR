@@ -1,0 +1,10 @@
+---
+DMR\Functional\Fixture\Model\ODM\Yaml\User:
+  fields:
+    id:
+      id: true
+    name:
+      encoder:
+        type: sha1
+        secret: xxx
+      type: string

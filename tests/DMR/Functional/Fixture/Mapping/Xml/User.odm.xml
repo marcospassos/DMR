@@ -1,0 +1,12 @@
+<doctrine-mongo-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mongo-mapping"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mongo-mapping
+                    http://doctrine-project.org/schemas/orm/doctrine-mongo-mapping.xsd">
+
+    <document name="DMR\Functional\Fixture\Model\ODM\Xml\User">
+        <field name="id" id="true" />
+        <field fieldName="name" type="string">
+            <encode type="sha1" secret="xxx" />
+        </field>
+    </document>
+</doctrine-mongo-mapping>

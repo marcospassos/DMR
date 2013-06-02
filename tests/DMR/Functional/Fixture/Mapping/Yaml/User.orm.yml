@@ -1,0 +1,15 @@
+---
+DMR\Functional\Fixture\Model\ORM\Yaml\User:
+  type: entity
+  id:
+    id:
+      type: integer
+      generator:
+        strategy: AUTO
+  fields:
+    name:
+      encoder:
+        type: sha1
+        secret: xxx
+      type: string
+      nullable: true

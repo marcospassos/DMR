@@ -19,7 +19,7 @@ abstract class Xml extends File
      *
      * @param SimpleXMLElement $node The instance of SimpleXMLElement
      * @param string           $name The name of attribute
-     * 
+     *
      * @return string
      */
     protected function getAttribute(SimpleXmlElement $node, $name)
@@ -34,7 +34,7 @@ abstract class Xml extends File
      *
      * @param SimpleXMLElement $node The instance of SimpleXMLElement
      * @param string           $name The name of attribute
-     * 
+     *
      * @return boolean
      */
     protected function getBooleanAttribute(SimpleXmlElement $node, $name)
@@ -47,14 +47,14 @@ abstract class Xml extends File
      *
      * @param SimpleXMLElement $node The instance of SimpleXMLElement
      * @param string           $name The name of attribute
-     * 
+     *
      * @return boolean
      */
     protected function isAttributeSet(SimpleXmlElement $node, $name)
     {
         $attributes = $node->attributes();
 
-        return isset($attributes[$attributeName]);
+        return isset($attributes[$name]);
     }
 
     /**
@@ -62,22 +62,17 @@ abstract class Xml extends File
      */
     protected function loadMappingFile($file)
     {
-        $result = array();
         $xmlElement = simplexml_load_file($file);
-        $xmlElement = $xmlElement->children(self::DOCTRINE_NAMESPACE_URI);
+        $types = array('mapped-superclass', 'entity', 'document');
 
-        if (isset($xmlElement->entity)) {
-            foreach ($xmlElement->entity as $entityElement) {
-                $entityName = $this->getAttribute($entityElement, 'name');
-                $result[$entityName] = $entityElement;
-            }
-        } else if (isset($xmlElement->{'mapped-superclass'})) {
-            foreach ($xmlElement->{'mapped-superclass'} as $mappedSuperClass) {
-                $className = $this->getAttribute($mappedSuperClass, 'name');
-                $result[$className] = $mappedSuperClass;
+        foreach ($types as $type) {
+            if (isset($xmlElement->$type)) {
+                $className = $this->getAttribute($xmlElement->$type, 'name');
+
+                return array($className => $xmlElement->$type);
             }
         }
 
-        return $result;
+        return null;
     }
 }

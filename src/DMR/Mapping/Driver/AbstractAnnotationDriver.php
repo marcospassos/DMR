@@ -26,6 +26,14 @@ abstract class AbstractAnnotationDriver implements AnnotationDriverInterface
     /**
      * {@inheritDoc}
      */
+    public function getAnnotationReader()
+    {
+        return $this->reader;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     public function setAnnotationReader(Reader $reader)
     {
         $this->reader = $reader;
@@ -37,5 +45,13 @@ abstract class AbstractAnnotationDriver implements AnnotationDriverInterface
     public function setOriginalDriver(MappingDriver $driver)
     {
         $this->originalDriver = $driver;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getOriginalDriver()
+    {
+        return $this->originalDriver;
     }
 }

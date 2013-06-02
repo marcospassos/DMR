@@ -17,7 +17,7 @@ class Reader implements ReaderInterface
     protected $manager;
 
     /**
-     * @var DriverInterface
+     * @var MappingDriver
      */
     protected $driver;
 
@@ -28,7 +28,7 @@ class Reader implements ReaderInterface
 
     /**
      * Constructor.
-     * 
+     *
      * @param ObjectManager $manager   The instance of ObjectManager
      * @param string        $namespace The namespace where the drivers are located
      */
@@ -45,15 +45,16 @@ class Reader implements ReaderInterface
     */
     public function read($object)
     {
+        $className = is_object($object) ? get_class($object) : $object;
         $factory = $this->manager->getMetadataFactory();
-        $meta = $factory->getMetadataFor(get_class($object));
+        $meta = $factory->getMetadataFor($className);
 
         if ($meta->isMappedSuperclass) {
             return;
         }
 
         $cacheDriver = $factory->getCacheDriver();
-        $cacheId = self::getCacheId($meta->name, $this->namespace);
+        $cacheId = static::getCacheId($meta->name, $this->namespace);
 
         if ($cacheDriver && ($cached = $cacheDriver->fetch($cacheId)) !== false) {
             return $cached;
@@ -88,7 +89,7 @@ class Reader implements ReaderInterface
      *
      * @param string $className The class name
      * @param string $namespace The namespace
-     * 
+     *
      * @return string
      */
     public static function getCacheId($className, $namespace)

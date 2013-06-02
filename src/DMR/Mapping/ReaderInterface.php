@@ -11,9 +11,9 @@ interface ReaderInterface
 {
     /**
     * Gets the metadata.
-    * 
-    * @param object $object The object instance from which metadata should be read
-    * 
+    *
+    * @param object|string $object The object instance from which metadata should be read or the class name
+    *
     * @return array
     */
     public function read($object);

@@ -39,13 +39,7 @@ Absolutely. Keep reading.
 ## Try it!
 
 ### Create your drivers
-Doctrine provides several different ways for specifying object-relational mapping metadata:
-
-- Docblock Annotations
-- XML
-- YAML
-
-In order to read the desired information in the mapping files Doctrine, you need to implement a driver for each of these mapping types. The library will try to find the drivers in the namespace Your\Extension\Mapping\Driver. If any a correspondent driver to the current mapping used by Doctrine is found, the library will try to load the Annotation driver as fallback (if not found, an exception will be thrown).
+In order to read the desired information in the Doctrine's mapping files, you need to implement a driver for each mapping type that should be supported. The library will try to find the drivers in the namespace `Your\Extension\Mapping\Driver`. If any driver correspondent to the current mapping type used by Doctrine is found, the library will try to load the Annotation driver as fallback (if not found, an exception will be thrown).
 
 This is a suggestion for your project structure:
 

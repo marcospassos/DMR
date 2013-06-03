@@ -45,7 +45,7 @@ DMR is installed via [Composer](http://getcomposer.org/). To install, simply add
 ```json
 {
     "require": {
-        "dmr/dmr": "0.1.*"
+        "dmr/dmr": "0.1.*-dev"
     }
 }
 ```
@@ -226,7 +226,6 @@ class User
                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                   xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping
                                       http://doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
-
     <entity name="Acme\Model\User">
         <field name="password" type="string">
             <encode type="sha1" secret="xxx" />

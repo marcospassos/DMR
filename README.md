@@ -6,6 +6,8 @@ It supports **Yaml**, **Xml** and **Annotation** drivers which will be chosen de
 
 Credits to [DoctrineExtensions](https://github.com/l3pp4rd/DoctrineExtensions), which big part of the code was inspired or extracted from.
 
+[![Build Status](https://travis-ci.org/marcospassos/DMR.png)](https://travis-ci.org/marcospassos/DMR)
+
 ## What is this for?
 
 This library is useful if you need read some data from Doctrine mapping files.

@@ -2,27 +2,32 @@
 
 namespace DMR\Functional;
 
-use DMR\Mapping\Reader;
 use Doctrine\Common\EventManager;
+use Doctrine\Common\Annotations\AnnotationReader;
+use Doctrine\Common\Cache\ArrayCache;
+use Doctrine\Common\Annotations\CachedReader;
 use Doctrine\Common\Persistence\Mapping\Driver\MappingDriver;
+use Doctrine\Common\Persistence\Mapping\Driver\SymfonyFileLocator;
+use Doctrine\Common\Persistence\Mapping\Driver\MappingDriverChain;
 // ORM specific
 use Doctrine\ORM\Mapping\DefaultQuoteStrategy;
 use Doctrine\ORM\Mapping\DefaultNamingStrategy;
 use Doctrine\ORM\Mapping\Driver\AnnotationDriver as AnnotationDriverORM;
 use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\Mapping\Driver\SimplifiedYamlDriver;
+use Doctrine\ORM\Mapping\Driver\SimplifiedXmlDriver;
 // ODM specific
 use Doctrine\ODM\MongoDB\Mapping\Driver\AnnotationDriver as AnnotationDriverODM;
 use Doctrine\ODM\MongoDB\DocumentManager;
-use Doctrine\Common\Annotations\AnnotationReader;
-use Doctrine\Common\Cache\ArrayCache;
-use Doctrine\Common\Annotations\CachedReader;
+use Doctrine\ODM\MongoDB\Mapping\Driver\YamlDriver;
+use Doctrine\ODM\MongoDB\Mapping\Driver\XmlDriver;
 
 /**
  * Functional tests.
  *
  * @author Marcos Passos <marcos@marcospassos.com>
  */
-abstract class FunctionalTestCase extends \PHPUnit_Framework_TestCase
+class BaseTestCase extends \PHPUnit_Framework_TestCase
 {
     const DRIVER_NAMESPACE = 'DMR\Functional\Mock\Extension\Encoder';
 
@@ -31,63 +36,73 @@ abstract class FunctionalTestCase extends \PHPUnit_Framework_TestCase
      */
     protected $evm;
 
-    /**
-     * @var string
-     */
-    protected $prefix;
-
-    public function getInstance($class)
+    public function getMockRegistries()
     {
-        $class = $this->prefix . $class;
+    	$registries = array();
 
-        return new $class;
+    	$registry = $this->getMockBuilder('Doctrine\Common\Persistence\AbstractManagerRegistry')
+    		->disableOriginalConstructor()
+    		->setMethods(array('getManagerForClass'))
+    		->getMockForAbstractClass();
+
+    	$callback = function ($class) {
+
+    		if (strpos($class, 'ORM') > -1) {
+    			$chain = $this->getMockORMMappingDriver();
+
+    			return $this->getMockSqliteEntityManager($chain);
+    		}
+
+    		if (strpos($class, 'ODM') > -1) {
+    			$chain = $this->getMockMongoDBMappingDriver();
+
+    			return $this->getMockMongoDBDocumentManager($chain);
+    		}
+    	};
+    	
+    	$this->assertNull($callback(''));
+    	$this->assertInstanceOf('Doctrine\ORM\EntityManager', $callback('ORM'));
+    	$this->assertInstanceOf('Doctrine\ODM\MongoDB\DocumentManager', $callback('ODM'));
+
+    	$registry->expects($this->any())
+    		->method('getManagerForClass')
+    		->will($this->returnCallback($callback));
+    	
+    	$registries[] = $registry;
+    	
+    	$registry = $this->getMockBuilder('Doctrine\Common\Persistence\AbstractManagerRegistry')
+	    	->disableOriginalConstructor()
+	    	->setMethods(array('getManagerForClass'))
+	    	->getMockForAbstractClass();
+    	
+    	$registry->expects($this->any())
+	    	->method('getManagerForClass')
+	    	->will($this->returnCallback($callback));
+    	 
+    	$registries[] = $registry;
+    	
+    	return $registries;
     }
-
-    public function testExceptionNoDrivers()
+    
+    protected function getMockMongoDBMappingDriver()
     {
-        $this->setExpectedException('RuntimeException');
-
-        $reader = new Reader($this->manager, 'Invalid\Namespace');
-    }
-
-    public function testXmlMapping()
-    {
-        $reader = new Reader($this->manager, self::DRIVER_NAMESPACE);
-        $metadata = $reader->read($this->getInstance('Xml\User'));
-
-        $this->assertEquals('name', $metadata['xml']['field']);
-        $this->assertEquals('sha1', $metadata['xml']['type']);
-        $this->assertEquals('xxx', $metadata['xml']['secret']);
-    }
-
-    public function testInheritanceXmlMapping()
-    {
-        $reader = new Reader($this->manager, self::DRIVER_NAMESPACE);
-        $metadata = $reader->read($this->getInstance('Xml\Child'));
-
-        $this->assertEquals('name', $metadata['xml']['field']);
-        $this->assertEquals('sha1', $metadata['xml']['type']);
-        $this->assertEquals('xxx', $metadata['xml']['secret']);
-    }
-
-    public function testYamlMapping()
-    {
-        $reader = new Reader($this->manager, self::DRIVER_NAMESPACE);
-        $metadata = $reader->read($this->getInstance('Yaml\User'));
-
-        $this->assertEquals('name', $metadata['yaml']['field']);
-        $this->assertEquals('sha1', $metadata['yaml']['type']);
-        $this->assertEquals('xxx', $metadata['yaml']['secret']);
-    }
-
-    public function testAnnotationMapping()
-    {
-        $reader = new Reader($this->manager, self::DRIVER_NAMESPACE);
-        $metadata = $reader->read($this->getInstance('Annotation\User'));
-
-        $this->assertEquals('name', $metadata['annotation']['field']);
-        $this->assertEquals('sha1', $metadata['annotation']['type']);
-        $this->assertEquals('xxx', $metadata['annotation']['secret']);
+    	$reader = new AnnotationReader();
+    	$annotationDriver = new AnnotationDriverODM($reader);
+    	
+    	$namespace = array(__DIR__.'/Fixture/Mapping/Yaml' => 'DMR\Functional\Fixture\Model\ODM\Yaml');
+    	$locator = new SymfonyFileLocator($namespace, '.odm.yml');
+    	$yamlDriver = new YamlDriver($locator, '.odm.xml');
+    	
+    	$namespace = array(__DIR__.'/Fixture/Mapping/Xml' => 'DMR\Functional\Fixture\Model\ODM\Xml');
+    	$locator = new SymfonyFileLocator($namespace, '.odm.xml');
+    	$xmlDriver = new XmlDriver($locator, $locator);
+    	
+    	$chain = new MappingDriverChain();
+    	$chain->addDriver($xmlDriver, 'DMR\Functional\Fixture\Model\ODM\Xml');
+    	$chain->addDriver($yamlDriver, 'DMR\Functional\Fixture\Model\ODM\Yaml');
+    	$chain->addDriver($annotationDriver, 'DMR\Functional\Fixture\Model\ODM\Annotation');
+    	
+    	return $chain;
     }
 
     /**
@@ -105,6 +120,25 @@ abstract class FunctionalTestCase extends \PHPUnit_Framework_TestCase
         $dm = DocumentManager::create($conn, $config, $this->getEventManager());
 
         return $dm;
+    }
+
+    protected function getMockORMMappingDriver()
+    {
+    	$reader = new AnnotationReader();
+	    $annotationDriver = new AnnotationDriverORM($reader);
+	    
+	    $namespace = array(__DIR__.'/Fixture/Mapping/Yaml' => 'DMR\Functional\Fixture\Model\ORM\Yaml');
+	    $yamlDriver = new SimplifiedYamlDriver($namespace);
+	    
+	    $namespace = array(__DIR__.'/Fixture/Mapping/Xml' => 'DMR\Functional\Fixture\Model\ORM\Xml');
+	    $xmlDriver = new SimplifiedXmlDriver($namespace);
+	    
+	    $chain = new MappingDriverChain();
+	    $chain->addDriver($xmlDriver, 'DMR\Functional\Fixture\Model\ORM\Xml');
+	    $chain->addDriver($yamlDriver, 'DMR\Functional\Fixture\Model\ORM\Yaml');
+	    $chain->addDriver($annotationDriver, 'DMR\Functional\Fixture\Model\ORM\Annotation');
+    	 
+    	return $chain;
     }
 
     /**
@@ -241,7 +275,8 @@ abstract class FunctionalTestCase extends \PHPUnit_Framework_TestCase
 
         $config->expects($this->any())
             ->method('getMetadataDriverImpl')
-            ->will($this->returnValue($mappingDriver));
+            ->will($this->returnValue($mappingDriver))
+        ;
 
         return $config;
     }
@@ -300,7 +335,8 @@ abstract class FunctionalTestCase extends \PHPUnit_Framework_TestCase
 
         $config->expects($this->any())
             ->method('getMetadataDriverImpl')
-            ->will($this->returnValue($mappingDriver));
+            ->will($this->returnValue($mappingDriver))
+        ;
 
         return $config;
     }

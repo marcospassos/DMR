@@ -2,22 +2,22 @@
 
 namespace DMR\Unit;
 
-use DMR\Mapping\Reader;
+use DMR\Mapping\AbstractReader;
 
 /**
  * Reader unit tests.
  *
  * @author Marcos Passos <marcos@marcospassos.com>
  */
-class ReaderTest extends \PHPUnit_Framework_TestCase
+class AbstractReaderTest extends \PHPUnit_Framework_TestCase
 {
     public function testCacheIdUniquenessMapping()
     {
-        $a = Reader::getCacheId('ClassA', 'Acme\A');
-        $a2 = Reader::getCacheId('ClassA', 'Acme\A');
-        $ab = Reader::getCacheId('ClassA', 'Acme\B');
-        $b = Reader::getCacheId('ClassB', 'Acme\B');
-        $ba = Reader::getCacheId('ClassB', 'Acme\A');
+        $a = AbstractReader::getCacheId('ClassA', 'Acme\A');
+        $a2 = AbstractReader::getCacheId('ClassA', 'Acme\A');
+        $ab = AbstractReader::getCacheId('ClassA', 'Acme\B');
+        $b = AbstractReader::getCacheId('ClassB', 'Acme\B');
+        $ba = AbstractReader::getCacheId('ClassB', 'Acme\A');
 
         $this->assertEquals($a, $a2);
         $this->assertNotEquals($a, $ab);
@@ -28,13 +28,15 @@ class ReaderTest extends \PHPUnit_Framework_TestCase
 
     public function testMappedSuperclass()
     {
-        $className = 'Acme/Class';
+    	$namespace = 'Acme';
+        $className = $namespace . '\Class';
 
         $metadata = $this->getMockForAbstractClass('Doctrine\Common\Persistence\Mapping\ClassMetadata');
         $metadata->isMappedSuperclass = true;
 
-        $reader = $this->getMockBuilder('DMR\Mapping\Reader')
+        $reader = $this->getMockBuilder('DMR\Mapping\AbstractReader')
             ->disableOriginalConstructor()
+            ->setMethods(array('getManagerForClass'))
             ->getMockForAbstractClass()
         ;
 
@@ -61,16 +63,17 @@ class ReaderTest extends \PHPUnit_Framework_TestCase
             ->will($this->returnValue($factory))
         ;
 
-        $reflection = new \ReflectionClass($reader);
-        $property = $reflection->getProperty('manager');
-        $property->setAccessible(true);
-        $property->setValue($reader, $manager);
+        $reader->expects($this->once())
+	        ->method('getManagerForClass')
+	        ->with($className)
+	        ->will($this->returnValue($manager))
+        ;
 
-        $this->assertNull($reader->read($className));
+        $this->assertNull($reader->read($className, $namespace));
 
     }
 
-    public function testCachedDriverNoCache()
+    public function testCachedDriverWhenNotCached()
     {
         $namespace = 'Acme';
         $className = $namespace.'/Class';
@@ -81,9 +84,9 @@ class ReaderTest extends \PHPUnit_Framework_TestCase
         $metadata->isMappedSuperclass = false;
         $metadata->name = $className;
 
-        $reader = $this->getMockBuilder('DMR\Mapping\Reader')
+        $reader = $this->getMockBuilder('DMR\Mapping\AbstractReader')
             ->disableOriginalConstructor()
-            ->setMethods(array('getCacheId'))
+            ->setMethods(array('getCacheId', 'getManagerForClass'))
             ->getMockForAbstractClass()
         ;
 
@@ -129,19 +132,18 @@ class ReaderTest extends \PHPUnit_Framework_TestCase
             ->will($this->returnValue($factory))
         ;
 
-        $reflection = new \ReflectionClass($reader);
-        $property = $reflection->getProperty('manager');
-        $property->setAccessible(true);
-        $property->setValue($reader, $manager);
+        $reader->expects($this->once())
+	        ->method('getManagerForClass')
+	        ->with($className)
+	        ->will($this->returnValue($manager))
+        ;
 
-        $property = $reflection->getProperty('namespace');
-        $property->setAccessible(true);
-        $property->setValue($reader, $namespace);
+		$data = $reader->read($className, $namespace);
 
-        $this->assertSame($return, $reader->read($className));
+        $this->assertSame($return, $data);
     }
 
-    public function testCachedDriverCached()
+    public function testCachedDriverWhenCached()
     {
         $namespace = 'Acme';
         $className = $namespace.'/Class';
@@ -152,9 +154,9 @@ class ReaderTest extends \PHPUnit_Framework_TestCase
         $metadata->name = $className;
         $metadata->reflClass = null;
 
-        $reader = $this->getMockBuilder('DMR\Mapping\Reader')
+        $reader = $this->getMockBuilder('DMR\Mapping\AbstractReader')
             ->disableOriginalConstructor()
-            ->setMethods(array('getCacheId'))
+            ->setMethods(array('getCacheId', 'getManagerForClass'))
             ->getMockForAbstractClass()
         ;
 
@@ -205,16 +207,12 @@ class ReaderTest extends \PHPUnit_Framework_TestCase
             ->will($this->returnValue($factory))
         ;
 
-        $reflection = new \ReflectionClass($reader);
-        $property = $reflection->getProperty('manager');
-        $property->setAccessible(true);
-        $property->setValue($reader, $manager);
+        $reader->expects($this->once())
+	        ->method('getManagerForClass')
+	        ->with($className)
+	        ->will($this->returnValue($manager));
 
-        $property = $reflection->getProperty('namespace');
-        $property->setAccessible(true);
-        $property->setValue($reader, $namespace);
-
-        $return = $reader->read($className);
+        $return = $reader->read($className, $namespace);
         $this->assertTrue(is_array($return));
         $this->assertEmpty($return);
     }

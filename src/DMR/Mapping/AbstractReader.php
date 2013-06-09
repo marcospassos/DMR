@@ -9,44 +9,37 @@ use Doctrine\Common\Persistence\ObjectManager;
  *
  * @author Marcos Passos <marcos@marcospassos.com>
  */
-class Reader implements ReaderInterface
+abstract class AbstractReader implements ReaderInterface
 {
-    /**
-     * @var ObjectManager
-     */
-    protected $manager;
+	/**
+	 * Returns the manager for an object.
+	 * 
+	 * @param string $class
+	 */
+    abstract protected function getManagerForClass($class);
 
     /**
-     * @var MappingDriver
+     * Returns the driver implementation correspondent to
+     * current in use natively by Doctrine.
+     * 
+     * @param ObjectManager $manager   The impementation of ObjectManager
+     * @param string        $namespace The namespace prefix where the drivers are
+     * 
+     * @return DMR\Mapping\DriverInterface
      */
-    protected $driver;
-
-    /**
-     * @var string
-     */
-    protected $namespace;
-
-    /**
-     * Constructor.
-     *
-     * @param ObjectManager $manager   The instance of ObjectManager
-     * @param string        $namespace The namespace where the drivers are located
-     */
-    public function __construct(ObjectManager $manager, $namespace)
+    public function getDriverForManager(ObjectManager $manager, $namespace)
     {
-        $this->manager = $manager;
-        $this->namespace = $namespace;
-        $originalDriver = $manager->getConfiguration()->getMetadataDriverImpl();
-        $this->driver = DriverFactory::getDriver($originalDriver, $namespace);
+    	return DriverFactory::getDriver($manager->getConfiguration()->getMetadataDriverImpl(), $namespace);
     }
 
     /**
     * {@inheritDoc}
     */
-    public function read($object)
+    public function read($object, $namespace)
     {
         $className = is_object($object) ? get_class($object) : $object;
-        $factory = $this->manager->getMetadataFactory();
+        $manager = $this->getManagerForClass($className);
+        $factory = $manager->getMetadataFactory();
         $meta = $factory->getMetadataFor($className);
 
         if ($meta->isMappedSuperclass) {
@@ -54,7 +47,7 @@ class Reader implements ReaderInterface
         }
 
         $cacheDriver = $factory->getCacheDriver();
-        $cacheId = static::getCacheId($meta->name, $this->namespace);
+        $cacheId = static::getCacheId($meta->name, $namespace);
 
         if ($cacheDriver && ($cached = $cacheDriver->fetch($cacheId)) !== false) {
             return $cached;
@@ -63,15 +56,17 @@ class Reader implements ReaderInterface
         $metadata = array();
         // Collect metadata from inherited classes
         if (null !== $meta->reflClass) {
+        	$driver = $this->getDriverForManager($manager, $namespace);
+
             foreach (array_reverse(class_parents($meta->name)) as $parentClass) {
                 // read only inherited mapped classes
                 if ($factory->hasMetadataFor($parentClass)) {
-                    $class = $this->manager->getClassMetadata($parentClass);
-                    $this->driver->read($class, $metadata);
+                    $class = $manager->getClassMetadata($parentClass);
+                    $driver->read($class, $metadata);
                 }
             }
 
-            $this->driver->read($meta, $metadata);
+            $driver->read($meta, $metadata);
         }
 
         /* Cache the metadata (even if it's empty). Caching empty

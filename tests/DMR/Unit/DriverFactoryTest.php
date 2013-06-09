@@ -3,7 +3,7 @@
 namespace DMR\Unit;
 
 use DMR\Mapping\DriverFactory;
-use DMR\Functional\FunctionalTestCase;
+use DMR\Functional\BaseTestCase;
 
 /**
  * DriverFactory unit tests.
@@ -45,7 +45,7 @@ class DriverFactoryTest extends \PHPUnit_Framework_TestCase
             ->will($this->returnValue($locator))
         ;
 
-        $driver = DriverFactory::getDriver($orginalDriver, FunctionalTestCase::DRIVER_NAMESPACE);
+        $driver = DriverFactory::getDriver($orginalDriver, BaseTestCase::DRIVER_NAMESPACE);
         $this->assertInstanceOf('DMR\Functional\Mock\Extension\Encoder\Mapping\Driver\\'.$driverType, $driver);
         $this->assertSame($orginalDriver, $driver->getOriginalDriver());
         $this->assertSame($locator, $driver->getLocator());
@@ -76,7 +76,7 @@ class DriverFactoryTest extends \PHPUnit_Framework_TestCase
             ->will($this->returnValue($reader))
         ;
 
-        $driver = $factory::getDriver($orginalDriver, FunctionalTestCase::DRIVER_NAMESPACE);
+        $driver = $factory::getDriver($orginalDriver, BaseTestCase::DRIVER_NAMESPACE);
         $this->assertInstanceOf('DMR\Functional\Mock\Extension\Encoder\Mapping\Driver\Annotation', $driver);
         $this->assertSame($orginalDriver, $driver->getOriginalDriver());
         $this->assertSame($reader, $driver->getAnnotationReader());
@@ -97,7 +97,7 @@ class DriverFactoryTest extends \PHPUnit_Framework_TestCase
             ->will($this->returnValue($reader))
         ;
 
-        $driver = $factory::getDriver($orginalDriver, FunctionalTestCase::DRIVER_NAMESPACE);
+        $driver = $factory::getDriver($orginalDriver, BaseTestCase::DRIVER_NAMESPACE);
         $this->assertInstanceOf('DMR\Functional\Mock\Extension\Encoder\Mapping\Driver\Annotation', $driver);
         $this->assertSame($orginalDriver, $driver->getOriginalDriver());
         $this->assertSame($reader, $driver->getAnnotationReader());
@@ -161,14 +161,14 @@ class DriverFactoryTest extends \PHPUnit_Framework_TestCase
             ->will($this->returnValue($reader))
         ;
 
-        $chain = $factory::getDriver($chainDriver, FunctionalTestCase::DRIVER_NAMESPACE);
+        $chain = $factory::getDriver($chainDriver, BaseTestCase::DRIVER_NAMESPACE);
         $this->assertInstanceOf('DMR\Mapping\Driver\Chain', $chain);
 
         $drivers = $chain->getDrivers();
         $this->assertCount(3, $drivers);
-        $this->assertInstanceOf(FunctionalTestCase::DRIVER_NAMESPACE.'\Mapping\Driver\Xml', $drivers[0]);
-        $this->assertInstanceOf(FunctionalTestCase::DRIVER_NAMESPACE.'\Mapping\Driver\Yaml', $drivers[1]);
-        $this->assertInstanceOf(FunctionalTestCase::DRIVER_NAMESPACE.'\Mapping\Driver\Annotation', $drivers[2]);
+        $this->assertInstanceOf(BaseTestCase::DRIVER_NAMESPACE.'\Mapping\Driver\Xml', $drivers[0]);
+        $this->assertInstanceOf(BaseTestCase::DRIVER_NAMESPACE.'\Mapping\Driver\Yaml', $drivers[1]);
+        $this->assertInstanceOf(BaseTestCase::DRIVER_NAMESPACE.'\Mapping\Driver\Annotation', $drivers[2]);
         $this->assertSame($annotationDriver, $chain->getDefaultDriver()->getOriginalDriver());
     }
 }

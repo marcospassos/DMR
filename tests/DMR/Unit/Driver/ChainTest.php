@@ -11,7 +11,7 @@ use DMR\Mapping\Driver\Chain;
  */
 class ChainTest extends \PHPUnit_Framework_TestCase
 {
-    public function testOriginalDriverDoNorhing()
+    public function testGetOriginalDriverShouldAlwaysReturnNull()
     {
         $originalDriver = $this->getMockForAbstractClass('Doctrine\Common\Persistence\Mapping\Driver\MappingDriver');
         $chain = new Chain();
@@ -19,7 +19,7 @@ class ChainTest extends \PHPUnit_Framework_TestCase
         $this->assertNull($chain->getOriginalDriver());
     }
 
-    public function testAddDriver()
+    public function testAddedDriversShouldBeAvailableInTheChainDriver()
     {
         $driverA = $this->getMockBuilder('DMR\Mapping\Driver\File')
             ->disableOriginalConstructor()
@@ -48,7 +48,7 @@ class ChainTest extends \PHPUnit_Framework_TestCase
         $this->assertContains($driverC, $drivers);
     }
 
-    public function testRead()
+    public function testChainDriverShouldDelegateTheResponsibilityToAWrappedDriverAccordingWithTheNamespace()
     {
         $metadata = $this->getMock('Doctrine\Common\Persistence\Mapping\ClassMetadata');
         $metadata->name = 'Acme/A/Class';
@@ -84,7 +84,7 @@ class ChainTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(array('extension' => true), $data);
     }
 
-    public function testReadWithDefaultDriver()
+    public function testShouldDelegateTheResponsabilityToTheDefaultDriverIfNoDriverIsAvailable()
     {
         $metadata = $this->getMock('Doctrine\Common\Persistence\Mapping\ClassMetadata');
         $metadata->name = 'Acme/A/Class';
@@ -114,7 +114,7 @@ class ChainTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(array('extension' => true), $data);
     }
 
-    public function testReadNoDrivers()
+    public function testShouldReadNothingIfNoDriverIsAvailable()
     {
         $metadata = $this->getMock('Doctrine\Common\Persistence\Mapping\ClassMetadata');
         $data = array();

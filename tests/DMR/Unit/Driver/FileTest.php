@@ -9,7 +9,7 @@ namespace DMR\Unit\Driver;
  */
 class FileTest extends \PHPUnit_Framework_TestCase
 {
-    public function testGetMappingWithOriginalDriver()
+    public function testShouldReadTheMappingDataUsingTheDefaultDriverWhenAvailable()
     {
         $className = 'Foo/Bar';
         $return = 'foo';
@@ -34,7 +34,7 @@ class FileTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($return, $mock->getMapping($className));
     }
 
-    public function testGetMappingWithoutOriginalDriver()
+    public function testShouldInvokeTheAbstractMethodIfNoDefaultDriverIsAvailable()
     {
         $className = 'Foo/Bar';
         $return = 'foo';

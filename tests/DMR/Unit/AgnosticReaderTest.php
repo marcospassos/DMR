@@ -15,7 +15,7 @@ class AgnosticReaderTest extends \PHPUnit_Framework_TestCase
 	 * @covers DMR\Mapping\AgnosticReader::addManagerRegistry
 	 * @covers DMR\Mapping\AgnosticReader::getRegistries
 	 */
-    public function testRegistriesPassedInTheConstructorAreAddedToTheList()
+    public function testRegistriesPassedInTheConstructorShouldBeAddedToTheList()
     {
     	$registryOR = $this->getMock('Doctrine\Common\Persistence\ManagerRegistry');
     	$registryOD = $this->getMock('Doctrine\Common\Persistence\ManagerRegistry');
@@ -26,7 +26,7 @@ class AgnosticReaderTest extends \PHPUnit_Framework_TestCase
     	$this->assertSame($registries, $reader->getRegistries());
     }
     
-    public function testDuplicatedRegistriesAreIgnored()
+    public function testDuplicatedRegistriesShouldBeIgnored()
     {
     	$registry = $this->getMock('Doctrine\Common\Persistence\ManagerRegistry');
     	$registries = array($registry, $registry, $registry, $registry);

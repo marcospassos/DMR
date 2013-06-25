@@ -36,7 +36,7 @@ class XmlTest extends \PHPUnit_Framework_TestCase
         return $method->invokeArgs($obj, $args);
     }
 
-    public function testGetAttribute()
+    public function testGetAttributeShouldReturnTheValueOfAttribute()
     {
         $value = 'Foo/Bar';
         $xml = new \SimpleXmlElement('<teste/>');
@@ -45,7 +45,7 @@ class XmlTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($value, self::call('getAttribute', $xml, 'name'));
     }
 
-    public function testGetBooleanAttribute()
+    public function testGetBooleanShouldReturnAConvertedStringInBoolean()
     {
         $value = 'Foo/Bar';
         $xml = new \SimpleXmlElement('<teste/>');
@@ -56,7 +56,7 @@ class XmlTest extends \PHPUnit_Framework_TestCase
         $this->assertFalse(self::call('getBooleanAttribute', $xml, 'falseValue'));
     }
 
-    public function testIsAttributeSet()
+    public function testIsAttributeSetShouldReturnTrueIfAnAttributeWasSet()
     {
         $value = 'Foo/Bar';
         $xml = new \SimpleXmlElement('<teste/>');
@@ -66,7 +66,7 @@ class XmlTest extends \PHPUnit_Framework_TestCase
         $this->assertFalse(self::call('isAttributeSet', $xml, 'invalid'));
     }
 
-    public function testLoadMappingFile()
+    public function testDefaultImplementationShouldBeAbleToParseAValidDoctrineXmlMappingFile()
     {
         $root = vfsStream::setup('home');
         $types = array('mapped-superclass', 'entity', 'document');
@@ -89,7 +89,7 @@ class XmlTest extends \PHPUnit_Framework_TestCase
         }
     }
 
-    public function testLoadUnexpectedMappingFile()
+    public function testTryingLoadAnInvalidMappingFileShouldReturnNull()
     {
         $root = vfsStream::setup('home');
 

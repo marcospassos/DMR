@@ -11,7 +11,7 @@ use DMR\Mapping\AbstractReader;
  */
 class AbstractReaderTest extends \PHPUnit_Framework_TestCase
 {
-    public function testCacheIdUniquenessMapping()
+    public function testCacheIdIsUniquenessAndConsistent()
     {
         $a = AbstractReader::getCacheId('ClassA', 'Acme\A');
         $a2 = AbstractReader::getCacheId('ClassA', 'Acme\A');
@@ -26,7 +26,7 @@ class AbstractReaderTest extends \PHPUnit_Framework_TestCase
         $this->assertNotEquals($ab, $ba);
     }
 
-    public function testMappedSuperclass()
+    public function testMappedSuperclassShouldReturnNull()
     {
     	$namespace = 'Acme';
         $className = $namespace . '\Class';
@@ -73,7 +73,7 @@ class AbstractReaderTest extends \PHPUnit_Framework_TestCase
 
     }
 
-    public function testCachedDriverWhenNotCached()
+    public function testCachedDriverShouldGenerateDataWhenNoCacheIsAvailable()
     {
         $namespace = 'Acme';
         $className = $namespace.'/Class';
@@ -143,7 +143,7 @@ class AbstractReaderTest extends \PHPUnit_Framework_TestCase
         $this->assertSame($return, $data);
     }
 
-    public function testCachedDriverWhenCached()
+    public function testCachedDriverShouldReturnCachedDataWhenAvailable()
     {
         $namespace = 'Acme';
         $className = $namespace.'/Class';
@@ -216,5 +216,4 @@ class AbstractReaderTest extends \PHPUnit_Framework_TestCase
         $this->assertTrue(is_array($return));
         $this->assertEmpty($return);
     }
-
 }

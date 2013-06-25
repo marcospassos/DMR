@@ -13,7 +13,7 @@ abstract class AbstractReaderTest extends BaseTestCase
 	
 	abstract public function getNamespaced($class);
 	
-    public function testThrowsExceptionIfNoCustomDriversIsFound()
+    public function testShouldThrowsAnExceptionIfNoCustomDriversIsFound()
     {
     	$this->setExpectedException('RuntimeException');
     
@@ -22,7 +22,7 @@ abstract class AbstractReaderTest extends BaseTestCase
     	$reader->read($anyClass, 'Invalid/Namespace');
     }
     
-    public function testLoadMetadataForObjectMappedUsingXml()
+    public function testShouldLoadTheMetadataForAnObjectMappedUsingXml()
     {
     	$reader = $this->getReader();
     	$metadata = $reader->read($this->getNamespaced('Xml\User'), self::DRIVER_NAMESPACE);
@@ -32,7 +32,7 @@ abstract class AbstractReaderTest extends BaseTestCase
     	$this->assertEquals('xxx', $metadata['xml']['secret']);
     }
     
-    public function testLoadMetadataForObjectMappedUsingXmlWithInheritance()
+    public function testShouldLoadTheMetadataForAnObjectMappedUsingXmlWithInheritance()
     {
     	$reader = $this->getReader();
     	$metadata = $reader->read($this->getNamespaced('Xml\Child'), self::DRIVER_NAMESPACE);
@@ -42,7 +42,7 @@ abstract class AbstractReaderTest extends BaseTestCase
     	$this->assertEquals('xxx', $metadata['xml']['secret']);
     }
     
-    public function testLoadMetadataForObjectMappedUsingYaml()
+    public function testShouldLoadTheMetadataForAnObjectMappedUsingYaml()
     {
     	$reader = $this->getReader();
     	$metadata = $reader->read($this->getNamespaced('Yaml\User'), self::DRIVER_NAMESPACE);
@@ -52,7 +52,7 @@ abstract class AbstractReaderTest extends BaseTestCase
     	$this->assertEquals('xxx', $metadata['yaml']['secret']);
     }
     
-    public function testLoadMetadataForObjectMappedUsingAnnotations()
+    public function testShouldLoadTheMetadataForAnObjectMappedUsingAnnotations()
     {
     	$reader = $this->getReader();
     	$metadata = $reader->read($this->getNamespaced('Annotation\User'), self::DRIVER_NAMESPACE);

@@ -12,7 +12,7 @@ use DMR\Functional\BaseTestCase;
  */
 class DriverFactoryTest extends \PHPUnit_Framework_TestCase
 {
-    public function testDriverDoesNotExist()
+    public function testTryingToLoadAnUnsupportedDriverShouldThrowAnException()
     {
         $this->setExpectedException('RuntimeException');
 
@@ -51,17 +51,17 @@ class DriverFactoryTest extends \PHPUnit_Framework_TestCase
         $this->assertSame($locator, $driver->getLocator());
     }
 
-    public function testXmlDriverLoader()
+    public function testShouldCreateAnEquivalentDriverForTheXmlDriver()
     {
         $this->assertFileDriver('Xml');
     }
 
-    public function testYamlDriverLoader()
+    public function testShouldCreateAnEquivalentDriverForTheYamlDriver()
     {
         $this->assertFileDriver('Yaml');
     }
 
-    public function testAnnotationDriverLoader()
+    public function testShouldCreateAnEquivalentDriverForTheAnnotationDriver()
     {
         $orginalDriver = $this->getMockBuilder('Doctrine\Common\Persistence\Mapping\Driver\AnnotationDriver')
             ->disableOriginalConstructor()
@@ -82,7 +82,7 @@ class DriverFactoryTest extends \PHPUnit_Framework_TestCase
         $this->assertSame($reader, $driver->getAnnotationReader());
     }
 
-    public function testAnnotationFallback()
+    public function testShouldCreateAnAnnotationDriverAsFallbackIfGivenDriverIsNotSupported()
     {
         $orginalDriver = $this->getMockBuilder('Doctrine\Common\Persistence\Mapping\Driver\AnnotationDriver')
             ->disableOriginalConstructor()
@@ -103,7 +103,7 @@ class DriverFactoryTest extends \PHPUnit_Framework_TestCase
         $this->assertSame($reader, $driver->getAnnotationReader());
     }
 
-    public function testChainDriverLoader()
+    public function testShouldCreateAnEquivalentDriverForTheChainDriverIncludingTheChildren()
     {
         $locator = $this->getMockBuilder('Doctrine\Common\Persistence\Mapping\Driver\SymfonyFileLocator')
             ->disableOriginalConstructor()

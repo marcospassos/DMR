@@ -45,18 +45,20 @@ class BaseTestCase extends \PHPUnit_Framework_TestCase
     		->setMethods(array('getManagerForClass'))
     		->getMockForAbstractClass();
 
-    	$callback = function ($class) {
+        $instance = $this;
+
+    	$callback = function ($class) use ($instance) {
 
     		if (strpos($class, 'ORM') > -1) {
-    			$chain = $this->getMockORMMappingDriver();
+    			$chain = $instance->getMockORMMappingDriver();
 
-    			return $this->getMockSqliteEntityManager($chain);
+    			return $instance->getMockSqliteEntityManager($chain);
     		}
 
     		if (strpos($class, 'ODM') > -1) {
-    			$chain = $this->getMockMongoDBMappingDriver();
+    			$chain = $instance->getMockMongoDBMappingDriver();
 
-    			return $this->getMockMongoDBDocumentManager($chain);
+    			return $instance->getMockMongoDBDocumentManager($chain);
     		}
     	};
     	

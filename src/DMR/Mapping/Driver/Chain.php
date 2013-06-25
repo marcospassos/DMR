@@ -56,7 +56,7 @@ class Chain implements DriverInterface
     /**
      * Sets the default driver.
      *
-     * @param Driver $driver
+     * @param DriverInterface $driver
      */
     public function setDefaultDriver(DriverInterface $driver)
     {

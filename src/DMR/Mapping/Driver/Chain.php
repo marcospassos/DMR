@@ -78,8 +78,6 @@ class Chain implements DriverInterface
 
         if (null !== $this->defaultDriver) {
             $this->defaultDriver->read($classMetadata, $metatada);
-
-            return;
         }
     }
 

@@ -7,8 +7,10 @@ use Doctrine\Common\Persistence\ObjectManager;
 /**
  * Simple metadata reader.
  *
- * Uses an ObjectManager to get the necessary resources
- * to read the metadata.
+ * SimpleReader uses an implementation of ObjectManager
+ * to get the necessary resources used by reader to read
+ * the class's metadata. Note that you can just read objects
+ * managed by the manager passed to the reader constructor.
  *
  * @author Marcos Passos <marcos@marcospassos.com>
  */

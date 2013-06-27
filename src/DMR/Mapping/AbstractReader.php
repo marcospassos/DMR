@@ -15,6 +15,8 @@ abstract class AbstractReader implements ReaderInterface
 	 * Returns the manager for an object.
 	 * 
 	 * @param string $class
+     *
+     * @return ObjectManager
 	 */
     abstract protected function getManagerForClass($class);
 
@@ -25,7 +27,7 @@ abstract class AbstractReader implements ReaderInterface
      * @param ObjectManager $manager   The impementation of ObjectManager
      * @param string        $namespace The namespace prefix where the drivers are
      * 
-     * @return DMR\Mapping\DriverInterface
+     * @return Driver\DriverInterface
      */
     public function getDriverForManager(ObjectManager $manager, $namespace)
     {

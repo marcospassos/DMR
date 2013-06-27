@@ -30,8 +30,7 @@ Reading Doctrine's metadata is simple as:
 <?php
 use DMR\Mapping\Reader;
 
-// $manager should be an instance of Doctrine\Common\Persistence\ObjectManager
-$reader = new SimpleReader($manager);
+$reader = new SimpleReader($manager); // or AgnosticReader($registries);
 $data = $reader->read('Acme\Model\User', 'Acme\Doctrine\ExtensionNamespace');
 // or $reader->read($user, 'Acme\Doctrine\ExtensionNamespace');
 ```

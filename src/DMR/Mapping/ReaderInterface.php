@@ -3,7 +3,7 @@
 namespace DMR\Mapping;
 
 /**
- * Metadata factory interface.
+ * Metadata reader interface.
  *
  * @author Marcos Passos <marcos@marcospassos.com>
  */

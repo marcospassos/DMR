@@ -5,7 +5,10 @@ namespace DMR\Mapping;
 use Doctrine\Common\Persistence\ObjectManager;
 
 /**
- * Metadata factory.
+ * Simple metadata reader.
+ *
+ * Uses an ObjectManager to get the necessary resources
+ * to read the metadata.
  *
  * @author Marcos Passos <marcos@marcospassos.com>
  */

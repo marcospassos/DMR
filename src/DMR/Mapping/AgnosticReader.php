@@ -7,6 +7,13 @@ use Doctrine\Common\Persistence\ManagerRegistry;
 /**
  * Metadata factory.
  *
+ * This reader uses a ManagerRegistry to get the necessary
+ * resources to read the metadata. The advantage of this
+ * reader over SimpleReader is this automatically guess
+ * the manager based on the given object. Once this reader
+ * is storage agnostic, you an read metadata's from an entity
+ * or a document in a transparent way.
+ *
  * @author Marcos Passos <marcos@marcospassos.com>
  */
 class AgnosticReader extends AbstractReader

@@ -31,8 +31,9 @@ Reading Doctrine's metadata is simple as:
 use DMR\Mapping\Reader;
 
 // $manager should be an instance of Doctrine\Common\Persistence\ObjectManager
-$reader = new Reader($manager, 'Acme\Doctrine\YourExtension');
-$data = $reader->read('Acme\Model\User'); // or $reader->read($user)
+$reader = new SimpleReader($manager);
+$data = $reader->read('Acme\Model\User', 'Acme\Doctrine\ExtensionNamespace');
+// or $reader->read($user, 'Acme\Doctrine\ExtensionNamespace');
 ```
 
 **Are you serious?**
@@ -250,15 +251,50 @@ Acme\Model\User:
 
 ### Reading the data
 
-Reading the data is pretty simple:
+Reading the data is pretty simple. Currently there are two metadata readers available:
+
+#### Simple Reader
+
+`SimpleReader` uses an implementation of `Doctrine\Common\Persistence\ObjectManager` to get the necessary resources used by reader to read the class's metadata. Note that you can just read objects managed by the manager passed to the reader constructor.
 
 ```php
 <?php
 use DMR\Mapping\Reader;
 
 // $manager should be an instance of Doctrine\Common\Persistence\ObjectManager
-$reader = new Reader($manager, 'Acme\Doctrine\YourExtension');
-$data = $reader->read('Acme\Model\User'); // or $reader->read($user)
+$reader = new SimpleReader($manager);
+$data = $reader->read('Acme\Model\User', 'Acme\Doctrine\ExtensionNamespace');
+// or $reader->read($user, 'Acme\Doctrine\ExtensionNamespace');
+
+var_dump($data);
+```
+
+The above example will output:
+
+```
+array(3) {
+  'field' =>
+  string(8) "password"
+  'type' =>
+  string(4) "sha1"
+  'secret' =>
+  string(3) "xxx"
+}
+```
+
+#### Agnostic Reader
+
+`AgnosticReader` uses a `Doctrine\Common\Persistence\ManagerRegistry` to get the necessary resources used by reader to read the class's metadata. The advantage of this implementation over the `SimpleReader` is that this one automatically guesses the manager based on the given object so that you can read the metadata's from an entity or a document in a transparent way.
+
+```php
+<?php
+use DMR\Mapping\Reader;
+
+// $registries should be an array of Doctrine\Common\Persistence\ManagerRegistry
+$reader = new AgnosticReader($registries);
+$data = $reader->read('Acme\Entity\User', 'Acme\Doctrine\ExtensionNamespace');
+$data = $reader->read('Acme\Document\User', 'Acme\Doctrine\ExtensionNamespace');
+// or $reader->read($user, 'Acme\Doctrine\ExtensionNamespace');
 
 var_dump($data);
 ```
@@ -282,27 +318,7 @@ array(3) {
 
 DMR's tests covers 100% of the code.
 
-```
-OK (32 tests, 127 assertions)
-
- Summary: 
-  Classes: 100.00% (6/6)
-  Methods: 100.00% (25/25)
-  Lines:   100.00% (109/109)
-
-\DMR\Mapping::DriverFactory
-  Methods: 100.00% ( 2/ 2)   Lines: 100.00% ( 27/ 27)
-\DMR\Mapping::Reader
-  Methods: 100.00% ( 3/ 3)   Lines: 100.00% ( 29/ 29)
-\DMR\Mapping\Driver::AbstractAnnotationDriver
-  Methods: 100.00% ( 4/ 4)   Lines: 100.00% (  6/  6)
-\DMR\Mapping\Driver::Chain
-  Methods: 100.00% ( 7/ 7)   Lines: 100.00% ( 17/ 17)
-\DMR\Mapping\Driver::File
-  Methods: 100.00% ( 6/ 6)   Lines: 100.00% ( 17/ 17)
-\DMR\Mapping\Driver::Xml
-  Methods: 100.00% ( 4/ 4)   Lines: 100.00% ( 13/ 13)
-```
+[![Build Status](https://travis-ci.org/marcospassos/DMR.png)](https://travis-ci.org/marcospassos/DMR)
 
 ### Running the Tests
 

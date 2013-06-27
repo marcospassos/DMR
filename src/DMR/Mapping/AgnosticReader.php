@@ -30,15 +30,17 @@ class AgnosticReader extends AbstractReader
     {
     	$this->registries = array();
 
-    	if ($registries) {
-    		foreach ($registries as $registry) {
-    			if (!$registry instanceof ManagerRegistry) {
-    				throw new \RuntimeException('The registry must implement interface Doctrine\Common\Persistence\ManagerRegistry.');
-    			}
+    	if (!$registries) {
+            return;
+        }
 
-    			$this->addManagerRegistry($registry);
-    		}
-    	}
+        foreach ($registries as $registry) {
+            if (!$registry instanceof ManagerRegistry) {
+                throw new \RuntimeException('The registry must implement interface Doctrine\Common\Persistence\ManagerRegistry.');
+            }
+
+            $this->addManagerRegistry($registry);
+        }
     }
 
     /**

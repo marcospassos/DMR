@@ -62,7 +62,7 @@ class DriverFactory
 
         // Fallback driver
         if (!$type || !class_exists($driverClass)) {
-            $driverClass = sprintf('%s\Mapping\Driver\Annotation', $namespace);;
+            $driverClass = sprintf('%s\Mapping\Driver\Annotation', $namespace);
 
             if (!class_exists($driverClass)) {
                 throw new \RuntimeException(sprintf('Failed to fallback to annotation driver: (%s), extension driver was not found.', $driverClass));
